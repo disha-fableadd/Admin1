@@ -1,0 +1,94 @@
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    role INT NOT NULL COMMENT '1 for admin, 2 for manager, 3 for staff',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create user_info table
+CREATE TABLE user_info (
+    uid INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    fname VARCHAR(100) NOT NULL,
+    lname VARCHAR(100) NOT NULL,
+    profileimage VARCHAR(255),
+    gender ENUM('male', 'female', 'other') NOT NULL,
+    contact VARCHAR(15) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    address TEXT,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Table: category
+CREATE TABLE category (
+    cid INT AUTO_INCREMENT PRIMARY KEY,
+    cname VARCHAR(100) NOT NULL UNIQUE,
+    description TEXT
+);
+
+-- Table: project
+CREATE TABLE project (
+    pid INT AUTO_INCREMENT PRIMARY KEY,
+	pname VARCHAR(255) NOT NULL,
+    category_id INT NOT NULL,
+    description TEXT,
+    timeline DATE NOT NULL,
+    manager_id INT NOT NULL,
+    staff_id INT NOT NULL,
+    FOREIGN KEY (category_id) REFERENCES category(cid) ON DELETE CASCADE,
+    FOREIGN KEY (manager_id) REFERENCES userss(id) ON DELETE CASCADE,
+     FOREIGN KEY (staff_id) REFERENCES userss(id) ON DELETE CASCADE
+);
+
+
+
+
+
+
+
+
+
+INSERT INTO categoryy (cname, description) VALUES
+('Web Development', 'Projects related to web application development and design'),
+('Mobile Development', 'Projects for mobile app development across various platforms'),
+('Data Science', 'Projects involving data analysis, modeling, and visualization'),
+('DevOps', 'Projects related to continuous integration and deployment pipelines'),
+('Cybersecurity', 'Projects focused on security infrastructure and protocols'),
+('AI & Machine Learning', 'Projects for artificial intelligence and machine learning algorithms'),
+('E-Commerce', 'Projects related to online store and shopping platforms'),
+('Healthcare IT', 'Projects in the healthcare technology domain');
+
+
+
+-- Create the users table
+CREATE TABLE IF NOT EXISTS userss (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    role INT NOT NULL COMMENT '1 for admin, 2 for manager, 3 for staff',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create the user_info table
+CREATE TABLE IF NOT EXISTS user_info (
+    uid INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    fname VARCHAR(100) NOT NULL,
+    lname VARCHAR(100) NOT NULL,
+    profileimage VARCHAR(255),
+    gender ENUM('male', 'female', 'other') NOT NULL,
+    contact VARCHAR(15) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    address TEXT,
+    FOREIGN KEY (user_id) REFERENCES userss(id) ON DELETE CASCADE
+);
+
+-- Insert admin user into the users table
+INSERT INTO userss (email, password, role, created_at)
+VALUES ('admin@gmail.com', MD5('admin123'), 1, NOW());
+
+-- Insert corresponding info into the user_info table
+INSERT INTO user_info (user_id, fname, lname, profileimage, gender, contact, email, address)
+VALUES
+(1, 'John', 'Doe', '2.jfif', 'male', '1234567890', 'admin@gmail.com', '123 main st, Surat');
