@@ -1,6 +1,3 @@
-
-
-
 <!doctype html>
 
 <html lang="en" class="light-style layout-wide customizer-hide" dir="ltr" data-theme="theme-default"
@@ -11,7 +8,7 @@
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
 
-    <title>loginForm</title>
+    <title>Reset Form</title>
 
     <meta name="description" content="" />
 
@@ -105,47 +102,63 @@
 
                     <div class="card-body mt-1">
                         <h4 class="mb-1">Welcome to Materio! 👋🏻</h4>
-                        <p class="mb-5">Sign in to access your dashboard.</p>
+                        <p class="mb-5">Reset Your Password</p>
 
-                        <form id="loginForm" class="mb-5" action="" method="POST">
+                        <form id="resetPasswordForm" method="POST" action="reset_password.php" class="mb-5">
+                            <?php
+                            if (isset($_GET['token']) && isset($_GET['user_id'])) {
+                                $token = htmlspecialchars($_GET['token']);
+                                $user_id = htmlspecialchars($_GET['user_id']);
+
+                                // Include the database connection
+                                include 'db.php';
+
+                                // Validate the token and user_id from the password_reset table
+                                $sql = "SELECT * FROM password_reset WHERE user_id = $user_id AND token = '$token' LIMIT 1";
+                                $result = mysqli_query($conn, $sql);
+
+                                if (mysqli_num_rows($result) > 0) {
+                                    // Token and user_id are valid, display the hidden inputs
+                                    echo "<input type='hidden' name='token' value='$token'>";
+                                    echo "<input type='hidden' name='user_id' value='$user_id'>";
+                                } else {
+                                    // Invalid token or user_id, show error message
+                                    echo "<p class='text-danger'>Invalid or expired password reset link.</p>";
+                                    exit;
+                                }
+                            } else {
+                                // Token or user_id is missing from the URL
+                                echo "<p class='text-danger'>Invalid request. Token or user ID missing.</p>";
+                                exit;
+                            }
+                            ?>
+
                             <div class="form-floating form-floating-outline mb-5">
-                                <input type="text" class="form-control" id="email" name="email"
-                                    placeholder="Enter your email or username" autofocus />
-                                <label for="email">Email or Username</label>
-<!-- 
-                                <div class="error" id="emailError" style="color:red"></div> -->
+                                <input type="password" class="form-control" name="password" id="password" placeholder="New Password" />
+                                <label for="email">New Password</label>
+                                <div id="passwordError" class="error text-danger"></div>
+                               
                             </div>
                             <div class="mb-5">
                                 <div class="form-password-toggle">
                                     <div class="input-group input-group-merge">
                                         <div class="form-floating form-floating-outline">
-                                            <input type="password" id="password" class="form-control" name="password"
-                                                placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
-                                                aria-describedby="password" />
-                                            <label for="password">Password</label>
+                                            <input type="password" class="form-control" name="conPassword" id="conPassword" placeholder="Confirm Password"/>
+                                            <label for="password">Confirm Password</label>
+                                            <div id="conPasswordError" class="error text-danger"></div>
                                         </div>
-                                        <span class="input-group-text cursor-pointer"><i
-                                                class="ri-eye-off-line ri-20px"></i></span>
+                                       
                                     </div>
                                     <!-- <div class="error" id="passwordError" style="color:red;"></div> -->
                                 </div>
                             </div>
-                            <div class="mb-5 pb-2 d-flex justify-content-between pt-2 align-items-center">
-                                <div class="form-check mb-0">
-                                    <input class="form-check-input" type="checkbox" id="remember-me" />
-                                    <label class="form-check-label" for="remember-me"> Remember Me </label>
-                                </div>
-                                <a href="forgotpsw.php" class="float-end mb-1">
-                                    <span>Forgot Password?</span>
-                                </a>
-                            </div>
+                            
                             <div class="mb-5">
-                                <button class="btn btn-primary d-grid w-100 " id="submitBtn"
-                                    type="submit">login</button>
+                                    <button type="submit" id="submitBtn" class=" btn btn-primary d-grid w-100">Reset Password</button>
                             </div>
+                            <div id="message" class="text-success" style="display: none;"></div>
                         </form>
-                        <p id="message" style="color: red;"></p>
-
+                       
 
                     </div>
                 </div>
@@ -183,35 +196,72 @@
     <!-- Place this tag before closing body tag for github widget button. -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
 
-
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        $(document).ready(function () {
-            $('#loginForm').on('submit', function (e) {
-                e.preventDefault(); // Prevent form default submission
+        $(document).ready(function() {
+        
+            $("#resetPasswordForm").submit(function(e) {
+                e.preventDefault();
+                let isValid = true;
 
-                const email = $('#email').val();
-                const password = $('#password').val();
+                $(".error").text("");
+                $("#message").hide();
 
-                $.ajax({
-                    url: 'log.php',
-                    type: 'POST',
-                    data: { email: email, password: password },
-                    dataType: 'json',
-                    success: function (response) {
-                        if (response.success) {
-                            window.location.href = response.redirect;
-                        } else {
-                            $('#message').text(response.message);
+                const password = $("#password").val().trim();
+                const conPassword = $("#conPassword").val().trim();
+
+                if (!password) {
+                    $("#passwordError").text("Please enter a password.");
+                    isValid = false;
+                } else if (password.length < 6) {
+                    $("#passwordError").text("Password must be at least 6 characters.");
+                    isValid = false;
+                }
+
+                if (!conPassword) {
+                    $("#conPasswordError").text("Please confirm your password.");
+                    isValid = false;
+                } else if (conPassword !== password) {
+                    $("#conPasswordError").text("Passwords do not match.");
+                    isValid = false;
+                }
+
+                if (isValid) {
+                    $.ajax({
+                        url: 'reset_password.php',
+                        type: 'POST',
+                        data: {
+                            token: $("input[name='token']").val(),
+                            user_id: $("input[name='user_id']").val(),
+                            password: password,
+                            conPassword: conPassword
+                        },
+                        success: function(response) {
+                            response = JSON.parse(response);
+
+                            if (response.success) {
+                                $("#message").html(`<div class="text-success">${response.message}</div>`).show();
+                                setTimeout(function () {
+                            window.location.href = 'login.php';
+                        }, 2000);
+                                
+                            } else {
+                                $("#message").html(`<div class="text-danger">${response.message}</div>`).show();
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.log(xhr.responseText);
+                            $("#message").html(`<div class="text-danger">An error occurred. Please try again.</div>`).show();
                         }
-                    },
-                    error: function () {
-                        $('#message').text('An error occurred. Please try again.');
-                    }
-                });
+                    });
+                }
             });
         });
     </script>
- 
+
+
+
+
 </body>
 
 </html>

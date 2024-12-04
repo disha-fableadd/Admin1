@@ -5,6 +5,7 @@ $query = "
     SELECT u.id,ui.uid, ui.fname, ui.lname, ui.profileimage, ui.gender, ui.contact, ui.email, ui.address, u.role
     FROM user_info ui
     INNER JOIN userss u ON ui.user_id = u.id
+    ORDER BY user_id DESC
 ";
 
 $result = mysqli_query($conn, $query);

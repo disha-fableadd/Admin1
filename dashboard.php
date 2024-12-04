@@ -24,14 +24,14 @@ $role = mysqli_fetch_assoc($roleResult)['role'];
 
 if ($role == 1) {
   // Admin: Total users, projects, and categories
-  $user_query = "SELECT COUNT(*) AS total_users FROM userss";
+  $user_query = "SELECT COUNT(*) AS total_users FROM userss ";
   $user_result = mysqli_query($conn, $user_query);
   if ($user_result) {
     $user_data = mysqli_fetch_assoc($user_result);
     $total_users = $user_data['total_users'];
   }
 
-  $project_query = "SELECT COUNT(*) AS total_projects FROM project";
+  $project_query = "SELECT COUNT(*) AS total_projects FROM project ";
   $project_result = mysqli_query($conn, $project_query);
   if ($project_result) {
     $project_data = mysqli_fetch_assoc($project_result);
@@ -84,7 +84,7 @@ if ($role == 1) {
 if ($role == 1) { // Admin: Show all user data
   $sql2 = "SELECT u.id,ui.fname, ui.lname, u.role, ui.gender, ui.email, ui.contact, ui.profileimage, ui.address 
           FROM userss u 
-          JOIN user_info ui ON u.id = ui.user_id";
+          JOIN user_info ui ON u.id = ui.user_id ORDER BY user_id DESC";
 } elseif ($role == 2) { // Manager: Show their details and all staff
   $sql2 = "SELECT u.id,ui.fname, ui.lname, u.role, ui.gender, ui.email, ui.contact, ui.profileimage, ui.address 
           FROM userss u 
@@ -123,7 +123,7 @@ if ($role == 1) { // Admin: View all projects
            JOIN userss u_manager ON p.manager_id = u_manager.id
            JOIN user_info ui_manager ON u_manager.id = ui_manager.user_id
            JOIN userss u_staff ON p.staff_id = u_staff.id
-           JOIN user_info ui_staff ON u_staff.id = ui_staff.user_id";
+           JOIN user_info ui_staff ON u_staff.id = ui_staff.user_id ORDER BY pid DESC";
 
   // Execute the query and fetch results
   $result1 = $conn->query($sql1);

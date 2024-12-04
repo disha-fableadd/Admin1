@@ -35,6 +35,21 @@ if ($result && mysqli_num_rows($result) > 0) {
     echo "Error: User details not found.";
     exit;
 }
+$user_role = $_SESSION['role'];
+
+if ($user_role == 1) {
+    $profileLabel = "Admin Profile";
+    $userLabel = "Admin";
+} elseif ($user_role == 2) {
+    $profileLabel = "Manager Profile";
+    $userLabel = "Manager";
+} elseif ($user_role == 3) {
+    $profileLabel = "Staff Profile";
+    $userLabel = "Staff";
+} else {
+    $profileLabel = "Profile";
+    $userLabel = "User";
+}
 ?>
 
 <?php
@@ -44,7 +59,7 @@ include 'layout/header.php';
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 
 <div class="container-xxl flex-grow-1 container-p-y">
-    <h2 class="text-center my-5"> Profile</h2>
+    <h2 class="text-center my-5">User Profile</h2>
 
     <div class="row justify-content-center">
         <!-- Left side: User Details -->
@@ -52,8 +67,8 @@ include 'layout/header.php';
             <div class="card shadow-lg p-4">
                 <div class="card-header text-center bg-primary text-white">
                     <!-- Admin Details Header -->
-                    <h4 class="text-white"> Profile</h4>
-                    <p class="text-white"> User</p>
+                    <h4 class="text-white"> <?php echo $profileLabel; ?></h4>
+                    <p class="text-white"> <?php echo $userLabel; ?></p>
                 </div>
                 <div class="card-body pt-4">
                     <div class="row">
@@ -108,19 +123,19 @@ include 'layout/header.php';
                     <!-- Edit Profile Button (only for Admin) -->
                     <?php if ($_SESSION['role'] == 1): ?>
                         <div class="text-center mt-4">
-                            <a href="edit_profile.php" class="btn btn-primary">Edit Profile</a><br>
+                            <a href="edit_profile.php" class="btn btn-primary">Edit Profile</a>
                             <a href="changepsw.php" class="btn btn-primary">Change Password</a>
                         </div>
                     <?php endif; ?>
                     <?php if ($_SESSION['role'] == 2): ?>
                         <div class="text-center mt-4">
-                            <a href="edit_profile.php" class="btn btn-primary">Edit Profile</a><br>
+                            <a href="edit_profile.php" class="btn btn-primary">Edit Profile</a>
                             <a href="changepsw.php" class="btn btn-primary">Change Password</a>
                         </div>
                     <?php endif; ?>
                     <?php if ($_SESSION['role'] == 3): ?>
                         <div class="text-center mt-4">
-                            <a href="edit_profile.php" class="btn btn-primary">Edit Profile</a><br>
+                            <a href="edit_profile.php" class="btn btn-primary">Edit Profile</a>
                             <a href="changepsw.php" class="btn btn-primary">Change Password</a>
                         </div>
                     <?php endif; ?>
