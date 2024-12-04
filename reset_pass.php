@@ -105,60 +105,48 @@
                         <p class="mb-5">Reset Your Password</p>
 
                         <form id="resetPasswordForm" method="POST" action="reset_password.php" class="mb-5">
-                            <?php
+                        <?php
                             if (isset($_GET['token']) && isset($_GET['user_id'])) {
                                 $token = htmlspecialchars($_GET['token']);
                                 $user_id = htmlspecialchars($_GET['user_id']);
-
-                                // Include the database connection
-                                include 'db.php';
-
-                                // Validate the token and user_id from the password_reset table
-                                $sql = "SELECT * FROM password_reset WHERE user_id = $user_id AND token = '$token' LIMIT 1";
-                                $result = mysqli_query($conn, $sql);
-
-                                if (mysqli_num_rows($result) > 0) {
-                                    // Token and user_id are valid, display the hidden inputs
-                                    echo "<input type='hidden' name='token' value='$token'>";
-                                    echo "<input type='hidden' name='user_id' value='$user_id'>";
-                                } else {
-                                    // Invalid token or user_id, show error message
-                                    echo "<p class='text-danger'>Invalid or expired password reset link.</p>";
-                                    exit;
-                                }
+                                echo "<input type='hidden' name='token' value='$token'>";
+                                echo "<input type='hidden' name='user_id' value='$user_id'>";
                             } else {
-                                // Token or user_id is missing from the URL
                                 echo "<p class='text-danger'>Invalid request. Token or user ID missing.</p>";
                                 exit;
                             }
                             ?>
 
+
                             <div class="form-floating form-floating-outline mb-5">
-                                <input type="password" class="form-control" name="password" id="password" placeholder="New Password" />
+                                <input type="password" class="form-control" name="password" id="password"
+                                    placeholder="New Password" />
                                 <label for="email">New Password</label>
                                 <div id="passwordError" class="error text-danger"></div>
-                               
+
                             </div>
                             <div class="mb-5">
                                 <div class="form-password-toggle">
                                     <div class="input-group input-group-merge">
                                         <div class="form-floating form-floating-outline">
-                                            <input type="password" class="form-control" name="conPassword" id="conPassword" placeholder="Confirm Password"/>
+                                            <input type="password" class="form-control" name="conPassword"
+                                                id="conPassword" placeholder="Confirm Password" />
                                             <label for="password">Confirm Password</label>
                                             <div id="conPasswordError" class="error text-danger"></div>
                                         </div>
-                                       
+
                                     </div>
                                     <!-- <div class="error" id="passwordError" style="color:red;"></div> -->
                                 </div>
                             </div>
-                            
+
                             <div class="mb-5">
-                                    <button type="submit" id="submitBtn" class=" btn btn-primary d-grid w-100">Reset Password</button>
+                                <button type="submit" id="submitBtn" class=" btn btn-primary d-grid w-100">Reset
+                                    Password</button>
                             </div>
                             <div id="message" class="text-success" style="display: none;"></div>
                         </form>
-                       
+
 
                     </div>
                 </div>
@@ -213,8 +201,8 @@
                 if (!password) {
                     $("#passwordError").text("Please enter a password.");
                     isValid = false;
-                } else if (password.length < 6) {
-                    $("#passwordError").text("Password must be at least 6 characters.");
+                } else if (password.length < 8) {
+                    $("#passwordError").text("Password must be at least 8 characters.");
                     isValid = false;
                 }
 
@@ -242,8 +230,9 @@
                             if (response.success) {
                                 $("#message").html(`<div class="text-success">${response.message}</div>`).show();
                                 setTimeout(function () {
-                            window.location.href = 'login.php';
-                        }, 2000);
+                                    window.location.href = 'login.php';
+                            }, 2000);
+                               
                                 
                             } else {
                                 $("#message").html(`<div class="text-danger">${response.message}</div>`).show();

@@ -57,25 +57,28 @@ include 'layout/header.php';
                         <!-- First Name -->
                         <div class="mb-3">
                             <label for="fname" class="form-label">First Name</label>
-                            <input type="text" class="form-control" id="fname" name="fname" value="<?= htmlspecialchars($fname); ?>" required>
+                            <input type="text" class="form-control" id="fname" name="fname"
+                                value="<?= htmlspecialchars($fname); ?>" >
                         </div>
 
                         <!-- Last Name -->
                         <div class="mb-3">
                             <label for="lname" class="form-label">Last Name</label>
-                            <input type="text" class="form-control" id="lname" name="lname" value="<?= htmlspecialchars($lname); ?>" required>
+                            <input type="text" class="form-control" id="lname" name="lname"
+                                value="<?= htmlspecialchars($lname); ?>" >
                         </div>
 
                         <!-- Email -->
                         <div class="mb-3">
                             <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="email" name="email" value="<?= htmlspecialchars($user_email); ?>" required>
+                            <input type="email" class="form-control" id="email" name="email"
+                                value="<?= htmlspecialchars($user_email); ?>" >
                         </div>
 
                         <!-- Gender -->
                         <div class="mb-3">
                             <label for="gender" class="form-label">Gender</label>
-                            <select class="form-control" id="gender" name="gender" required>
+                            <select class="form-control" id="gender" name="gender" >
                                 <option value="male" <?= ($gender == 'male') ? 'selected' : ''; ?>>Male</option>
                                 <option value="female" <?= ($gender == 'female') ? 'selected' : ''; ?>>Female</option>
                                 <option value="other" <?= ($gender == 'other') ? 'selected' : ''; ?>>Other</option>
@@ -85,18 +88,24 @@ include 'layout/header.php';
                         <!-- Contact -->
                         <div class="mb-3">
                             <label for="contact" class="form-label">Contact</label>
-                            <input type="text" class="form-control" id="contact" name="contact" value="<?= htmlspecialchars($contact); ?>" required>
+                            <input type="text" class="form-control" id="contact" name="contact"
+                                value="<?= htmlspecialchars($contact); ?>" >
                         </div>
 
                         <!-- Address -->
                         <div class="mb-3">
                             <label for="address" class="form-label">Address</label>
-                            <textarea class="form-control" id="address" name="address" rows="4" required><?= htmlspecialchars($address); ?></textarea>
+                            <textarea class="form-control" id="address" name="address" rows="4"
+                                ><?= htmlspecialchars($address); ?></textarea>
                         </div>
 
                         <!-- Profile Image -->
                         <div class="mb-3">
                             <label for="profileimage" class="form-label">Profile Image</label>
+                            <div class="mb-3">
+                                <img src="<?= htmlspecialchars($profileimage); ?>" alt="Profile Picture"
+                                    class="img-thumbnail" style="max-width: 150px;">
+                            </div>
                             <input type="file" class="form-control" id="profileimage" name="profileimage">
                             <small class="form-text text-muted">Leave empty to keep the current profile image.</small>
                         </div>
@@ -106,7 +115,8 @@ include 'layout/header.php';
                             <button type="submit" class="btn btn-primary">Save Changes</button>
                         </div>
                     </form>
-                    <div id="responseMessage" class="mt-3 text-center"></div> <!-- For displaying the response message -->
+                    <div id="responseMessage" class="mt-3 text-center"></div>
+                    <!-- For displaying the response message -->
                 </div>
             </div>
         </div>
@@ -117,32 +127,89 @@ include 'layout/header.php';
 // Include footer layout
 include 'layout/footer.php';
 ?>
-
 <script>
-$(document).ready(function() {
-    $("#editProfileForm").submit(function(e) {
-        e.preventDefault(); // Prevent the form from submitting the traditional way
+    $(document).ready(function () {
+        // Validate form inputs
+        function validateForm() {
+            // Clear previous error messages
+            $(".error-message").remove();
 
-        var formData = new FormData(this); // Get the form data, including the image
+            const fname = $("#fname").val().trim();
+            const lname = $("#lname").val().trim();
+            const email = $("#email").val().trim();
+            const gender = $("#gender").val();
+            const contact = $("#contact").val().trim();
+            const address = $("#address").val().trim();
 
-        $.ajax({
-            url: 'edit_profile_action.php', // The PHP script that will handle the update
-            type: 'POST',
-            data: formData,
-            processData: false, // Don't process the files
-            contentType: false, // Don't set content type
-            success: function(response) {
-                // If the update was successful, show a success message
-                $('#responseMessage').html('<div class="alert alert-success">Profile updated successfully!</div>');
-                setTimeout(function () {
+            let isValid = true;
+
+            // Validate first name
+            if (fname === '') {
+                $("#fname").after('<div class="error-message text-danger">First name is .</div>');
+                isValid = false;
+            }
+
+            // Validate last name
+            if (lname === '') {
+                $("#lname").after('<div class="error-message text-danger">Last name is .</div>');
+                isValid = false;
+            }
+
+            // Validate email format
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                $("#email").after('<div class="error-message text-danger">Enter a valid email address.</div>');
+                isValid = false;
+            }
+
+            // Validate gender selection
+            if (gender === '') {
+                $("#gender").after('<div class="error-message text-danger">Please select your gender.</div>');
+                isValid = false;
+            }
+
+            // Validate contact number (at least 10 digits)
+            const contactRegex = /^[0-9]{10,}$/;
+            if (!contactRegex.test(contact)) {
+                $("#contact").after('<div class="error-message text-danger">Contact number must be at least 10 digits.</div>');
+                isValid = false;
+            }
+
+            // Validate address
+            if (address === '') {
+                $("#address").after('<div class="error-message text-danger">please enter youur address</div>');
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        // Handle form submission
+        $("#editProfileForm").submit(function (e) {
+            e.preventDefault(); // Prevent the form from submitting the traditional way
+
+            if (validateForm()) {
+                const formData = new FormData(this); // Get the form data, including the image
+
+                $.ajax({
+                    url: 'edit_profile_action.php', // The PHP script that will handle the update
+                    type: 'POST',
+                    data: formData,
+                    processData: false, // Don't process the files
+                    contentType: false, // Don't set content type
+                    success: function (response) {
+                        // If the update was successful, show a success message
+                        $('#responseMessage').html('<div class="alert alert-success">Profile updated successfully!</div>');
+                        setTimeout(function () {
                             window.location.href = 'profile1.php';
                         }, 2000);
-            },
-            error: function(xhr, status, error) {
-                // If an error occurred, show an error message
-                $('#responseMessage').html('<div class="alert alert-danger">Error: ' + xhr.responseText + '</div>');
+                    },
+                    error: function (xhr, status, error) {
+                        // If an error occurred, show an error message
+                        $('#responseMessage').html('<div class="alert alert-danger">Error: ' + xhr.responseText + '</div>');
+                    }
+                });
             }
         });
     });
-});
 </script>

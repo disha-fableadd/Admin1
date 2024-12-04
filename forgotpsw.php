@@ -147,7 +147,8 @@
                     autofocus />
                   <label>Email</label>
                 </div>
-                <button class="btn btn-primary d-grid w-100 mb-5" id="submitBtn">Send Reset Link</button>
+                <button type="submit" class="btn btn-primary d-grid w-100 mb-5" id="submitBtn">Send Reset Link</button>
+                <div id="emailError" class="text-danger"></div>
                 <div id="message" class="" style="display: none;"></div>
               </form>
               <div class="text-center">
@@ -221,6 +222,7 @@
                 }
 
                 if (isValid) {
+                  $("#emailError").hide();
                     $.ajax({
                         url: 'forgot_pass.php',
                         type: 'POST',

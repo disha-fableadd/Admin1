@@ -71,7 +71,10 @@ $conn->close();
 
     <meta name="description" content="" />
 
-    <!-- Favicon -->
+
+
+
+<!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="assets/img/favicon/favicon.ico" />
 
     <!-- Fonts -->
@@ -98,7 +101,6 @@ $conn->close();
 
     <!-- Helpers -->
     <script src="assets/vendor/js/helpers.js"></script>
-
 
     <script src="assets/js/config.js"></script>
 

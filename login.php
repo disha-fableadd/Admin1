@@ -1,6 +1,3 @@
-
-
-
 <!doctype html>
 
 <html lang="en" class="light-style layout-wide customizer-hide" dir="ltr" data-theme="theme-default"
@@ -112,7 +109,7 @@
                                 <input type="text" class="form-control" id="email" name="email"
                                     placeholder="Enter your email or username" autofocus />
                                 <label for="email">Email or Username</label>
-<!-- 
+                                <!-- 
                                 <div class="error" id="emailError" style="color:red"></div> -->
                             </div>
                             <div class="mb-5">
@@ -199,7 +196,11 @@
                     dataType: 'json',
                     success: function (response) {
                         if (response.success) {
-                            window.location.href = response.redirect;
+                            $("#message").html('<div class="alert alert-success">' + response.message + "</div>");
+                            setTimeout(function () {
+                                window.location.href = response.redirect;
+                            }, 2000);
+
                         } else {
                             $('#message').text(response.message);
                         }
@@ -211,7 +212,7 @@
             });
         });
     </script>
- 
+
 </body>
 
 </html>

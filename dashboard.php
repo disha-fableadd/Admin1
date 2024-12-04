@@ -81,20 +81,25 @@ if ($role == 1) {
 }
 
 
-if ($role == 1) { // Admin: Show all user data
-  $sql2 = "SELECT u.id,ui.fname, ui.lname, u.role, ui.gender, ui.email, ui.contact, ui.profileimage, ui.address 
-          FROM userss u 
-          JOIN user_info ui ON u.id = ui.user_id ORDER BY user_id DESC";
-} elseif ($role == 2) { // Manager: Show their details and all staff
-  $sql2 = "SELECT u.id,ui.fname, ui.lname, u.role, ui.gender, ui.email, ui.contact, ui.profileimage, ui.address 
-          FROM userss u 
-          JOIN user_info ui ON u.id = ui.user_id
-          WHERE u.role = 3 OR u.id = $user_id"; // Staff or current manager
-} elseif ($role == 3) { // Staff: Show their details and all managers
-  $sql2 = "SELECT u.id,ui.fname, ui.lname, u.role, ui.gender, ui.email, ui.contact, ui.profileimage, ui.address 
-          FROM userss u 
-          JOIN user_info ui ON u.id = ui.user_id
-          WHERE u.role = 2 OR u.id = $user_id"; // Managers or current staff
+if ($role == 1) { 
+  // Admin: Show all user data except their own
+  $sql2 = "SELECT u.id, ui.fname, ui.lname, u.role, ui.gender, ui.email, ui.contact, ui.profileimage, ui.address 
+           FROM userss u 
+           JOIN user_info ui ON u.id = ui.user_id 
+           WHERE u.id != $user_id
+           ORDER BY u.id DESC";
+} elseif ($role == 2) { 
+  // Manager: Show their details and all staff except themselves
+  $sql2 = "SELECT u.id, ui.fname, ui.lname, u.role, ui.gender, ui.email, ui.contact, ui.profileimage, ui.address 
+           FROM userss u 
+           JOIN user_info ui ON u.id = ui.user_id 
+           WHERE (u.role = 3 OR u.id != $user_id) AND u.role != 1";
+} elseif ($role == 3) { 
+  // Staff: Show their details and all managers except themselves
+  $sql2 = "SELECT u.id, ui.fname, ui.lname, u.role, ui.gender, ui.email, ui.contact, ui.profileimage, ui.address 
+           FROM userss u 
+           JOIN user_info ui ON u.id = ui.user_id 
+           WHERE (u.role = 2 OR u.id != $user_id) AND u.role != 1";
 }
 
 // Execute query
@@ -104,6 +109,7 @@ $result2 = $conn->query($sql2);
 if (!$result2) {
   die("Query failed: " . $conn->error);
 }
+
 
 
 
@@ -311,7 +317,9 @@ include 'layout/header.php';
                 </tr>
               </thead>
               <tbody>
+               
                 <?php
+                
                 if ($result2->num_rows > 0) {
                   // Fetch and display each row
                   while ($row = $result2->fetch_assoc()) {
@@ -387,6 +395,16 @@ include 'layout/header.php';
 
               </tbody>
             </table>
+            <nav>
+  <ul class="pagination">
+    <?php for ($i = 1; $i <= $total_users_pages; $i++): ?>
+      <li class="page-item <?= ($i == $page_users) ? 'active' : '' ?>">
+        <a class="page-link" href="?page_users=<?= $i ?>&page_projects=<?= $page_projects ?>"><?= $i ?></a>
+      </li>
+    <?php endfor; ?>
+  </ul>
+</nav>
+
           </div>
         </div>
       </div>
